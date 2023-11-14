@@ -1,35 +1,42 @@
 package uo.cpm.p8;
+
 import java.util.Properties;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import com.jtattoo.plaf.hifi.HiFiLookAndFeel;
+import com.jtattoo.plaf.mcwin.McWinLookAndFeel;
 
 import uo.cpm.p8.ui.VentanaPrincipal;
 
+/**
+ * 
+ * @user German Iglesias Ramos
+ * @UO 202549
+ * @date 14 nov 2023
+ */
 
 public class Main {
 	public static void main(String[] args) {
-		
+
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-		      try {
-		    	  // Cambia el look and feel
-		    	  Properties props = new Properties();
-		    	  props.put("logoString", "");
-		    	  HiFiLookAndFeel.setCurrentTheme(props);
-		    	  UIManager.setLookAndFeel("com.jtattoo.plaf.hifi.HiFiLookAndFeel");
-		    	  
-		    	  // Crea la ventana
-		    	  VentanaPrincipal v = new VentanaPrincipal();
-		    	  v.setVisible(true);
-		      } catch (Exception e) {
-		        JOptionPane.showMessageDialog(null, "Error: "+e);
-		      }
-		    }
-		  });
+				try {
+					// Cambia el look and feel
+					Properties props = new Properties();
+					props.put("logoString", "");
+					McWinLookAndFeel.setCurrentTheme(props);
+					UIManager.setLookAndFeel("com.jtattoo.plaf.mcwin.McWinLookAndFeel");
+
+					// Crea la ventana
+					VentanaPrincipal v = new VentanaPrincipal();
+					v.setVisible(true);
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Error: " + e);
+				}
+			}
+		});
 
 	}
 

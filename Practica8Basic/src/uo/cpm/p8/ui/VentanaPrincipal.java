@@ -9,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Toolkit;
 import java.awt.Color;
 import javax.swing.JLabel;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JSlider;
 import java.awt.Font;
@@ -26,6 +27,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.awt.event.InputEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -47,7 +49,7 @@ public class VentanaPrincipal extends JFrame {
 	private JLabel lblLibrary;
 	private JScrollPane scListLibrary;
 	private JList listLibrary;
-	private JPanel panelBTLibrary;
+	private JPanel panelBtLibrary;
 	private JButton btnAdd;
 	private JButton btnDelLib;
 	private JLabel lblReproducir;
@@ -73,6 +75,7 @@ public class VentanaPrincipal extends JFrame {
 	private JSeparator separator;
 	private JSeparator separator_1;
 	private JFileChooser selector;
+	private DefaultListModel<File> modeloListLib;
 
 	/**
 	 * Create the frame.
@@ -91,20 +94,24 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.add(getPanelNorte(), BorderLayout.NORTH);
 		contentPane.add(getPanel_1());
 		setLocationRelativeTo(null);
-		
+
 		habilitarPanelBoton(false);
-		
+
 	}
 
+	/**
+	 * Metodo para habilitar o no los botones de los paneles libreria y play
+	 * 
+	 * @param bool
+	 */
 	private void habilitarPanelBoton(boolean bool) {
-		for(int i = 0; i< panelBTLibrary.getComponents().length; i++) {
-			panelBTLibrary.getComponent(i).setEnabled(bool);
-		}		
-		for(int i = 0; i< panelBtPlay.getComponents().length; i++) {
+		for (int i = 0; i < panelBtLibrary.getComponents().length; i++) {
+			panelBtLibrary.getComponent(i).setEnabled(bool);
+		}
+		for (int i = 0; i < panelBtPlay.getComponents().length; i++) {
 			panelBtPlay.getComponent(i).setEnabled(bool);
 		}
 	}
-
 
 	private JPanel getPanelNorte() {
 		if (panelNorte == null) {
@@ -158,9 +165,13 @@ public class VentanaPrincipal extends JFrame {
 		return slVolumen;
 	}
 
+	/**
+	 * Metodo que permite a la vez que cambia el slider del volumen, cambia la label
+	 * del volumen
+	 */
 	protected void pintarYCambiarVolumen() {
 		getLblTextVolumen().setText(String.valueOf(getSlVolumen().getValue()));
-		
+
 	}
 
 	private JPanel getPanel_2() {
@@ -234,6 +245,7 @@ public class VentanaPrincipal extends JFrame {
 
 	private JScrollPane getScListLibrary() {
 		if (scListLibrary == null) {
+			modeloListLib = new DefaultListModel<File>();
 			scListLibrary = new JScrollPane();
 			scListLibrary.setBorder(new LineBorder(Color.ORANGE, 3, true));
 			scListLibrary.setViewportView(getListLibrary());
@@ -252,14 +264,14 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private JPanel getPanel_4() {
-		if (panelBTLibrary == null) {
-			panelBTLibrary = new JPanel();
-			panelBTLibrary.setBackground(Color.BLACK);
-			panelBTLibrary.setLayout(new GridLayout(1, 2, 0, 0));
-			panelBTLibrary.add(getBtnAdd());
-			panelBTLibrary.add(getBtnDelLib());
+		if (panelBtLibrary == null) {
+			panelBtLibrary = new JPanel();
+			panelBtLibrary.setBackground(Color.BLACK);
+			panelBtLibrary.setLayout(new GridLayout(1, 2, 0, 0));
+			panelBtLibrary.add(getBtnAdd());
+			panelBtLibrary.add(getBtnDelLib());
 		}
-		return panelBTLibrary;
+		return panelBtLibrary;
 	}
 
 	private JButton getBtnAdd() {
@@ -455,8 +467,14 @@ public class VentanaPrincipal extends JFrame {
 	 */
 	protected void abrirFicheros() {
 		int resp = getSelector().showOpenDialog(this);
-		if( resp == getSelector().APPROVE_OPTION) {
+		if (resp == getSelector().APPROVE_OPTION) {
 			// carga ficheros de canciones en listLibrary
+			
+//			for (int i = 0; i< getSelector().getSelectedFiles().length; i++) {
+//				if (!modeloListLib.contains(getSelector().getSelectedFiles()[i])) {
+//					modeloListLib.addElement(getSelector().getSelectedFiles()[i]);
+//				}				
+//			}
 		}
 
 	}

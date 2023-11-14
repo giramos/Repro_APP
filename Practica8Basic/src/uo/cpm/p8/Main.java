@@ -8,6 +8,7 @@ import javax.swing.UIManager;
 
 import com.jtattoo.plaf.mcwin.McWinLookAndFeel;
 
+import uo.cpm.p8.player.MusicPlayer;
 import uo.cpm.p8.ui.VentanaPrincipal;
 
 /**
@@ -19,7 +20,7 @@ import uo.cpm.p8.ui.VentanaPrincipal;
 
 public class Main {
 	public static void main(String[] args) {
-
+		MusicPlayer mP = new MusicPlayer();
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -30,7 +31,7 @@ public class Main {
 					UIManager.setLookAndFeel("com.jtattoo.plaf.mcwin.McWinLookAndFeel");
 
 					// Crea la ventana
-					VentanaPrincipal v = new VentanaPrincipal();
+					VentanaPrincipal v = new VentanaPrincipal(mP);
 					v.setVisible(true);
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Error: " + e);

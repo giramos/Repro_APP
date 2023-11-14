@@ -32,6 +32,11 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import uo.cpm.p8.player.MusicPlayer;
+import uo.cpm.p8.player.MyFile;
+
+import javax.swing.ListSelectionModel;
+
 /**
  * 
  * @author UO202549
@@ -56,7 +61,7 @@ public class VentanaPrincipal extends JFrame {
 	private JPanel panelPlay;
 	private JLabel lblLibrary;
 	private JScrollPane scListLibrary;
-	private JList<File> listLibrary;
+	private JList<MyFile> listLibrary;
 	private JPanel panelBtLibrary;
 	private JButton btnAdd;
 	private JButton btnDelLib;
@@ -65,7 +70,7 @@ public class VentanaPrincipal extends JFrame {
 	private JButton btnRew;
 	private JButton btnPlay;
 	private JScrollPane scPlay;
-	private JList<File> listPlay;
+	private JList<MyFile> listPlay;
 	private JButton btnStop;
 	private JButton btnForward;
 	private JButton btnDel;
@@ -85,13 +90,18 @@ public class VentanaPrincipal extends JFrame {
 	private JFileChooser selector;
 
 	// 1.Declaramos los dos modelos para las listas
-	private DefaultListModel<File> modeloListLibrary;
-	private DefaultListModel<File> modeloListPlay;
+	private DefaultListModel<MyFile> modeloListLibrary;
+	private DefaultListModel<MyFile> modeloListPlay;
+
+	private MusicPlayer mP;
 
 	/**
 	 * Create the frame.
+	 * 
+	 * @param mP
 	 */
-	public VentanaPrincipal() {
+	public VentanaPrincipal(MusicPlayer mP) {
+		this.mP = mP;
 		setIconImage(Toolkit.getDefaultToolkit().getImage(VentanaPrincipal.class.getResource("/img/logoTitulo.png")));
 		setTitle("EII MusicPlayer");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -181,7 +191,10 @@ public class VentanaPrincipal extends JFrame {
 	 * del volumen
 	 */
 	protected void pintarYCambiarVolumen() {
-		getLblTextVolumen().setText(String.valueOf(getSlVolumen().getValue()));
+		int volumen = getSlVolumen().getValue();
+		getLblTextVolumen().setText(String.valueOf(getSlVolumen().getValue())); // actualizamos etiqueta
+		// cambiar el volumen de verdad
+		mP.setVolume(volumen, getSlVolumen().getMaximum());
 
 	}
 
@@ -263,12 +276,12 @@ public class VentanaPrincipal extends JFrame {
 		return scListLibrary;
 	}
 
-	private JList<File> getListLibrary() {
+	private JList<MyFile> getListLibrary() {
 		if (listLibrary == null) {
 //			2.Instanciar el modlelo
-			modeloListLibrary = new DefaultListModel<File>();
+			modeloListLibrary = new DefaultListModel<MyFile>();
 //			3.Asociar wel modelo con la lista. Modo1: parametro del contrictos
-			listLibrary = new JList<File>(modeloListLibrary);
+			listLibrary = new JList<MyFile>(modeloListLibrary);
 			listLibrary.setFont(new Font("Dialog", Font.PLAIN, 14));
 			listLibrary.setForeground(Color.ORANGE);
 			listLibrary.setBackground(Color.BLACK);
@@ -313,12 +326,24 @@ public class VentanaPrincipal extends JFrame {
 	private JButton getBtnDelLib() {
 		if (btnDelLib == null) {
 			btnDelLib = new JButton("Delete");
+			btnDelLib.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					deletePlayList();
+				}
+			});
 			btnDelLib.setMnemonic('d');
 			btnDelLib.setForeground(Color.WHITE);
 			btnDelLib.setFont(new Font("Dialog", Font.BOLD, 14));
 			btnDelLib.setBackground(Color.BLACK);
 		}
 		return btnDelLib;
+	}
+
+	protected void deletePlayList() {
+		for (int i = 0; i < getListLibrary().getSelectedValuesList().size(); i++) {
+			modeloListLibrary.removeElement(getListLibrary().getSelectedValuesList().get(i));
+		}
+
 	}
 
 	private JLabel getLblReproducir() {
@@ -349,6 +374,11 @@ public class VentanaPrincipal extends JFrame {
 	private JButton getBtnRew() {
 		if (btnRew == null) {
 			btnRew = new JButton("◄◄");
+			btnRew.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					rewind();
+				}
+			});
 			btnRew.setToolTipText("Rewind");
 			btnRew.setForeground(Color.WHITE);
 			btnRew.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -357,15 +387,37 @@ public class VentanaPrincipal extends JFrame {
 		return btnRew;
 	}
 
+	protected void rewind() {
+		if (getListPlay().getSelectedIndex() == -1) { // Si no hay nada
+			getListPlay().setSelectedIndex(0);
+		} else if (getListPlay().getSelectedIndex() != -1) { // si hay alguna ..
+			getListPlay().setSelectedIndex(getListPlay().getSelectedIndex() - 1);
+		}
+		mP.play(getListPlay().getSelectedValue().getF());
+	}
+
 	private JButton getBtnPlay() {
 		if (btnPlay == null) {
 			btnPlay = new JButton("►");
+			btnPlay.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					play();
+				}
+			});
 			btnPlay.setToolTipText("Play");
 			btnPlay.setForeground(Color.WHITE);
 			btnPlay.setFont(new Font("Dialog", Font.BOLD, 14));
 			btnPlay.setBackground(Color.BLACK);
 		}
 		return btnPlay;
+	}
+
+	protected void play() {
+		if (getListPlay().getSelectedIndex() == -1) {
+			getListPlay().setSelectedIndex(0); // si no hay ninguna seleccionada, seleccionamos la primera
+
+		}
+		mP.play(getListPlay().getSelectedValue().getF());
 	}
 
 	private JScrollPane getScPlay() {
@@ -377,11 +429,12 @@ public class VentanaPrincipal extends JFrame {
 		return scPlay;
 	}
 
-	private JList<File> getListPlay() {
+	private JList<MyFile> getListPlay() {
 		if (listPlay == null) {
 			// 2.creamos el modelo
-			modeloListPlay = new DefaultListModel<File>();
-			listPlay = new JList<File>();
+			modeloListPlay = new DefaultListModel<MyFile>();
+			listPlay = new JList<MyFile>();
+			listPlay.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			// 3.Asociar el modelo con la lista. Modo 2 = uso del medoto setModel()
 			listPlay.setModel(modeloListPlay);
 			listPlay.setForeground(Color.ORANGE);
@@ -394,6 +447,11 @@ public class VentanaPrincipal extends JFrame {
 	private JButton getBtnStop() {
 		if (btnStop == null) {
 			btnStop = new JButton("■");
+			btnStop.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mP.stop();
+				}
+			});
 			btnStop.setToolTipText("Stop");
 			btnStop.setForeground(Color.WHITE);
 			btnStop.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -405,6 +463,11 @@ public class VentanaPrincipal extends JFrame {
 	private JButton getBtnForward() {
 		if (btnForward == null) {
 			btnForward = new JButton("►►");
+			btnForward.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					forward();
+				}
+			});
 			btnForward.setToolTipText("Forward");
 			btnForward.setForeground(Color.WHITE);
 			btnForward.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -413,15 +476,39 @@ public class VentanaPrincipal extends JFrame {
 		return btnForward;
 	}
 
+	protected void forward() {
+		if (getListPlay().getSelectedIndex() == -1) { // si no hay nada
+			getListPlay().setSelectedIndex(0);
+		} else if (getListPlay().getSelectedIndex() != -1) { // si hay
+			getListPlay().setSelectedIndex(getListPlay().getSelectedIndex() + 1);
+		} else if (getListPlay().getSelectedIndex() == getListPlay().getSelectedValuesList().size()) { // si es el mismo
+																										// que el tamaño
+			getListPlay().setSelectedIndex(0);
+		}
+		mP.play(getListPlay().getSelectedValue().getF());
+
+	}
+
 	private JButton getBtnDel() {
 		if (btnDel == null) {
 			btnDel = new JButton("Del");
+			btnDel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					delPlay();
+				}
+			});
 			btnDel.setToolTipText("delete");
 			btnDel.setForeground(Color.WHITE);
 			btnDel.setFont(new Font("Dialog", Font.BOLD, 14));
 			btnDel.setBackground(Color.BLACK);
 		}
 		return btnDel;
+	}
+
+	protected void delPlay() {
+		mP.stop();
+		modeloListPlay.removeElement(getListPlay().getSelectedValue());
+
 	}
 
 	private JMenuBar getMenuBar_1() {
@@ -504,7 +591,7 @@ public class VentanaPrincipal extends JFrame {
 			// carga ficheros de canciones en listLibrary
 
 			for (int i = 0; i < getSelector().getSelectedFiles().length; i++) {
-				modeloListLibrary.addElement(getSelector().getSelectedFiles()[i]);
+				modeloListLibrary.addElement(new MyFile(getSelector().getSelectedFiles()[i]));
 			}
 //				if (!modeloListLib.contains(getSelector().getSelectedFiles()[i])) {
 //					modeloListLib.addElement(getSelector().getSelectedFiles()[i]);

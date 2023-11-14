@@ -1,0 +1,28 @@
+ListLibrery (JList)
+	puede contener datos como imagenes, texto
+	Los datos no los contiene, estan en un modelo (modeloListLibrary) - > defaultLisModel
+	
+	en el FileChooser:
+		<File>
+		<File
+		
+		addElement() -> añade elementos al modelo de uno en uno
+		removeElement() -> para eliminar
+		
+		*La iteracion se hace con el JList
+		
+		en el JList:
+			getSelectedValue() -> carga archivos de uno en uno
+			getSelectedValuesList() -> carga archivos varios, multiseleccion
+				-size()
+				-get(i)
+			getSelectedIndex() -> para saber el indice
+			getSelectedIndices()
+			getSelectedIndex() == -1 -> no hay nada seleccionado en la lista
+			setSelectedIndex(2) -> esto quiere decir que seleccionas en la lista el indice 2 el cual modificas
+			
+			
+ListPlay (JList)
+	tambien hay otro modelo, el cual hay que asociar a un modelo
+	(modeloListPlay) -> defaultListModel
+	

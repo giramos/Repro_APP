@@ -89,7 +89,20 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.add(getPanelNorte(), BorderLayout.NORTH);
 		contentPane.add(getPanel_1());
 		setLocationRelativeTo(null);
+		
+		habilitarPanelBoton(false);
+		
 	}
+
+	private void habilitarPanelBoton(boolean bool) {
+		for(int i = 0; i< panelBTLibrary.getComponents().length; i++) {
+			panelBTLibrary.getComponent(i).setEnabled(bool);
+		}		
+		for(int i = 0; i< panelBtPlay.getComponents().length; i++) {
+			panelBtPlay.getComponent(i).setEnabled(bool);
+		}
+	}
+
 
 	private JPanel getPanelNorte() {
 		if (panelNorte == null) {
@@ -166,6 +179,7 @@ public class VentanaPrincipal extends JFrame {
 			lblTextVolumen.setForeground(Color.WHITE);
 			lblTextVolumen.setFont(new Font("Dialog", Font.BOLD, 40));
 			lblTextVolumen.setBackground(Color.BLACK);
+			lblTextVolumen.setText(String.valueOf(slVolumen.getValue()));
 		}
 		return lblTextVolumen;
 	}

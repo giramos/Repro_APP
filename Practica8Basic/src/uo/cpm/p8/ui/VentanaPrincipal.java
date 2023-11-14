@@ -29,6 +29,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -139,6 +141,11 @@ public class VentanaPrincipal extends JFrame {
 	private JSlider getSlVolumen() {
 		if (slVolumen == null) {
 			slVolumen = new JSlider();
+			slVolumen.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					pintarYCambiarVolumen();
+				}
+			});
 			slVolumen.setFocusable(false);
 			slVolumen.setPaintTicks(true);
 			slVolumen.setPaintLabels(true);
@@ -149,6 +156,11 @@ public class VentanaPrincipal extends JFrame {
 			slVolumen.setBackground(Color.BLACK);
 		}
 		return slVolumen;
+	}
+
+	protected void pintarYCambiarVolumen() {
+		getLblTextVolumen().setText(String.valueOf(getSlVolumen().getValue()));
+		
 	}
 
 	private JPanel getPanel_2() {

@@ -1,41 +1,49 @@
 package uo.cpm.p8.ui;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.Toolkit;
 import java.awt.Color;
-import javax.swing.JLabel;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JSlider;
 import java.awt.Font;
-import javax.swing.SwingConstants;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import javax.swing.JScrollPane;
-import javax.swing.border.LineBorder;
-import javax.swing.JList;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
-import javax.swing.KeyStroke;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.awt.event.InputEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
 
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JSlider;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+/**
+ * 
+ * @author UO202549
+ * @name German Iglesias Ramos
+ * @date 14 nov 2023
+ */
 public class VentanaPrincipal extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JPanel panelNorte;
 	private JPanel panelCentro;
@@ -48,7 +56,7 @@ public class VentanaPrincipal extends JFrame {
 	private JPanel panelPlay;
 	private JLabel lblLibrary;
 	private JScrollPane scListLibrary;
-	private JList listLibrary;
+	private JList<File> listLibrary;
 	private JPanel panelBtLibrary;
 	private JButton btnAdd;
 	private JButton btnDelLib;
@@ -57,7 +65,7 @@ public class VentanaPrincipal extends JFrame {
 	private JButton btnRew;
 	private JButton btnPlay;
 	private JScrollPane scPlay;
-	private JList listPlay;
+	private JList<File> listPlay;
 	private JButton btnStop;
 	private JButton btnForward;
 	private JButton btnDel;
@@ -75,7 +83,10 @@ public class VentanaPrincipal extends JFrame {
 	private JSeparator separator;
 	private JSeparator separator_1;
 	private JFileChooser selector;
-	private DefaultListModel<File> modeloListLib;
+
+	// 1.Declaramos los dos modelos para las listas
+	private DefaultListModel<File> modeloListLibrary;
+	private DefaultListModel<File> modeloListPlay;
 
 	/**
 	 * Create the frame.
@@ -245,7 +256,6 @@ public class VentanaPrincipal extends JFrame {
 
 	private JScrollPane getScListLibrary() {
 		if (scListLibrary == null) {
-			modeloListLib = new DefaultListModel<File>();
 			scListLibrary = new JScrollPane();
 			scListLibrary.setBorder(new LineBorder(Color.ORANGE, 3, true));
 			scListLibrary.setViewportView(getListLibrary());
@@ -253,9 +263,12 @@ public class VentanaPrincipal extends JFrame {
 		return scListLibrary;
 	}
 
-	private JList getListLibrary() {
+	private JList<File> getListLibrary() {
 		if (listLibrary == null) {
-			listLibrary = new JList();
+//			2.Instanciar el modlelo
+			modeloListLibrary = new DefaultListModel<File>();
+//			3.Asociar wel modelo con la lista. Modo1: parametro del contrictos
+			listLibrary = new JList<File>(modeloListLibrary);
 			listLibrary.setFont(new Font("Dialog", Font.PLAIN, 14));
 			listLibrary.setForeground(Color.ORANGE);
 			listLibrary.setBackground(Color.BLACK);
@@ -277,12 +290,24 @@ public class VentanaPrincipal extends JFrame {
 	private JButton getBtnAdd() {
 		if (btnAdd == null) {
 			btnAdd = new JButton("Add to PlayList");
+			btnAdd.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					añadirAPlayList();
+				}
+			});
 			btnAdd.setMnemonic('a');
 			btnAdd.setFont(new Font("Dialog", Font.BOLD, 14));
 			btnAdd.setForeground(Color.WHITE);
 			btnAdd.setBackground(Color.BLACK);
 		}
 		return btnAdd;
+	}
+
+	protected void añadirAPlayList() {
+		for (int i = 0; i < getListLibrary().getSelectedValuesList().size(); i++) {
+			modeloListPlay.addElement(getListLibrary().getSelectedValuesList().get(i));
+		}
+
 	}
 
 	private JButton getBtnDelLib() {
@@ -352,9 +377,13 @@ public class VentanaPrincipal extends JFrame {
 		return scPlay;
 	}
 
-	private JList getListPlay() {
+	private JList<File> getListPlay() {
 		if (listPlay == null) {
-			listPlay = new JList();
+			// 2.creamos el modelo
+			modeloListPlay = new DefaultListModel<File>();
+			listPlay = new JList<File>();
+			// 3.Asociar el modelo con la lista. Modo 2 = uso del medoto setModel()
+			listPlay.setModel(modeloListPlay);
 			listPlay.setForeground(Color.ORANGE);
 			listPlay.setFont(new Font("Dialog", Font.PLAIN, 14));
 			listPlay.setBackground(Color.BLACK);
@@ -454,6 +483,10 @@ public class VentanaPrincipal extends JFrame {
 			mnOpen.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					abrirFicheros();
+					habilitarPanelBoton(true);
+					getMnPlay().setEnabled(true);
+					getMnOptions().setEnabled(true);
+
 				}
 			});
 			mnOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
@@ -467,10 +500,12 @@ public class VentanaPrincipal extends JFrame {
 	 */
 	protected void abrirFicheros() {
 		int resp = getSelector().showOpenDialog(this);
-		if (resp == getSelector().APPROVE_OPTION) {
+		if (resp == JFileChooser.APPROVE_OPTION) {
 			// carga ficheros de canciones en listLibrary
-			
-//			for (int i = 0; i< getSelector().getSelectedFiles().length; i++) {
+
+			for (int i = 0; i < getSelector().getSelectedFiles().length; i++) {
+				modeloListLibrary.addElement(getSelector().getSelectedFiles()[i]);
+			}
 //				if (!modeloListLib.contains(getSelector().getSelectedFiles()[i])) {
 //					modeloListLib.addElement(getSelector().getSelectedFiles()[i]);
 //				}				
@@ -537,6 +572,19 @@ public class VentanaPrincipal extends JFrame {
 	private JFileChooser getSelector() {
 		if (selector == null) {
 			selector = new JFileChooser();
+			// si solo quieres uno quita o comenta la siguiente linea
+			// permite seleccionar varios ficheros a la vez
+			selector.setMultiSelectionEnabled(true);
+
+			// Para que cuando se nos abra la ventana aparexca en un determindao direcotrio
+			// fijar el directorio de despliegue del JFilechooser en mi carpeta de mi
+			// proyecto music
+			String path = System.getProperty("user.dir") + "/music/";
+			// fijar el direcotrio de despliegue del JFilechooser e el escritorio
+			String path1 = System.getProperty("user.home") + "/desktop/";
+
+			selector.setCurrentDirectory(new File(path));
+
 		}
 		return selector;
 	}

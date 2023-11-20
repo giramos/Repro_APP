@@ -8,11 +8,11 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -29,22 +29,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import javazoom.jlgui.basicplayer.BasicPlayerException;
 import uo.cpm.p8.player.MusicPlayer;
 import uo.cpm.p8.player.MyFile;
-
-import javax.swing.ListSelectionModel;
-import javax.swing.JToggleButton;
-import java.awt.event.KeyAdapter;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
 
 /**
  * 
@@ -210,11 +205,6 @@ public class VentanaPrincipal extends JFrame {
 		// cambiar el volumen de verdad
 		mP.setVolume(volumen, getSlVolumen().getMaximum());
 
-	}
-
-	private void setVolume(double volume) {
-		double volMax = getSlVolumen().getMaximum();
-		mP.setVolume(volume, volMax);
 	}
 
 	private JPanel getPanel_2() {
@@ -713,7 +703,7 @@ public class VentanaPrincipal extends JFrame {
 			// proyecto music
 			String path = System.getProperty("user.dir") + "/music/";
 			// fijar el direcotrio de despliegue del JFilechooser e el escritorio
-			String path1 = System.getProperty("user.home") + "/desktop/";
+//			String path1 = System.getProperty("user.home") + "/desktop/";
 
 			selector.setCurrentDirectory(new File(path));
 

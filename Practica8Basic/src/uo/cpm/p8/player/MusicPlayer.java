@@ -47,14 +47,9 @@ public class MusicPlayer {
 	public void setVolume(double vol, double volMax) {
 		try {
 			basicPlayer.setGain(vol / volMax);
-			
-		
+
 		} catch (BasicPlayerException e) {
 		}
 	}
-	
-	
-	
-	
 
 }

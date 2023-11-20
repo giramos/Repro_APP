@@ -340,12 +340,12 @@ public class VentanaPrincipal extends JFrame {
 		for (int i = 0; i < getListLibrary().getSelectedValuesList().size(); i++) {
 			if (!modeloListPlay.contains(getListLibrary().getSelectedValuesList().get(i))) {
 				modeloListPlay.addElement(getListLibrary().getSelectedValuesList().get(i));
-			}else {
-				JOptionPane.showMessageDialog(this, "Nun se pude neno añadir esa cancion porque ya ta!!!!", "Reproductor", JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(this, "Nun se pude neno añadir esa cancion porque ya ta!!!!",
+						"Reproductor", JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
 
-		
 	}
 
 	private JButton getBtnDelLib() {
@@ -448,7 +448,6 @@ public class VentanaPrincipal extends JFrame {
 	protected void play() {
 		if (getListPlay().getSelectedIndex() == -1) {
 			getListPlay().setSelectedIndex(0); // si no hay ninguna seleccionada, seleccionamos la primera
-
 		}
 		mP.play(getListPlay().getSelectedValue().getF());
 	}
@@ -517,7 +516,8 @@ public class VentanaPrincipal extends JFrame {
 		} else if (getListPlay().getSelectedIndex() != -1) { // si hay
 			getListPlay().setSelectedIndex(getListPlay().getSelectedIndex() + 1);
 		} else if (getListPlay().getSelectedIndex() == getListPlay().getSelectedValuesList().size()) { // si es el mismo
-																										// que el tamaño
+																										// // que el
+																										// tamaño
 			getListPlay().setSelectedIndex(0);
 		}
 		mP.play(getListPlay().getSelectedValue().getF());
@@ -544,7 +544,6 @@ public class VentanaPrincipal extends JFrame {
 	protected void delPlay() {
 		mP.stop();
 		modeloListPlay.removeElement(getListPlay().getSelectedValue());
-
 	}
 
 	private JMenuBar getMenuBar_1() {
@@ -609,7 +608,6 @@ public class VentanaPrincipal extends JFrame {
 					habilitarPanelBoton(true);
 					getMnPlay().setEnabled(true);
 					getMnOptions().setEnabled(true);
-
 				}
 			});
 			mnOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));

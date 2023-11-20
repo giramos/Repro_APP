@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -32,10 +33,15 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import javazoom.jlgui.basicplayer.BasicPlayerException;
 import uo.cpm.p8.player.MusicPlayer;
 import uo.cpm.p8.player.MyFile;
 
 import javax.swing.ListSelectionModel;
+import javax.swing.JToggleButton;
+import java.awt.event.KeyAdapter;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 /**
  * 
@@ -94,6 +100,11 @@ public class VentanaPrincipal extends JFrame {
 	private DefaultListModel<MyFile> modeloListPlay;
 
 	private MusicPlayer mP;
+	private JButton btnPause;
+	private boolean isPaused = false;
+	private JButton btnClear;
+	private JButton btnClearLib;
+	private JToggleButton btnMute;
 
 	/**
 	 * Create the frame.
@@ -198,6 +209,11 @@ public class VentanaPrincipal extends JFrame {
 
 	}
 
+	private void setVolume(double volume) {
+		double volMax = getSlVolumen().getMaximum();
+		mP.setVolume(volume, volMax);
+	}
+
 	private JPanel getPanel_2() {
 		if (panelVolumen == null) {
 			panelVolumen = new JPanel();
@@ -293,9 +309,10 @@ public class VentanaPrincipal extends JFrame {
 		if (panelBtLibrary == null) {
 			panelBtLibrary = new JPanel();
 			panelBtLibrary.setBackground(Color.BLACK);
-			panelBtLibrary.setLayout(new GridLayout(1, 2, 0, 0));
+			panelBtLibrary.setLayout(new GridLayout(1, 3, 0, 0));
 			panelBtLibrary.add(getBtnAdd());
 			panelBtLibrary.add(getBtnDelLib());
+			panelBtLibrary.add(getBtnClearLib());
 		}
 		return panelBtLibrary;
 	}
@@ -340,8 +357,11 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	protected void deletePlayList() {
-		for (int i = 0; i < getListLibrary().getSelectedValuesList().size(); i++) {
-			modeloListLibrary.removeElement(getListLibrary().getSelectedValuesList().get(i));
+		ArrayList<MyFile> listaLib = new ArrayList<MyFile>();
+		listaLib.addAll(0, getListLibrary().getSelectedValuesList());
+
+		for (int i = 0; i < listaLib.size(); i++) {
+			modeloListLibrary.removeElement(listaLib.get(i));
 		}
 
 	}
@@ -361,12 +381,15 @@ public class VentanaPrincipal extends JFrame {
 		if (panelBtPlay == null) {
 			panelBtPlay = new JPanel();
 			panelBtPlay.setBackground(Color.BLACK);
-			panelBtPlay.setLayout(new GridLayout(1, 5, 0, 0));
+			panelBtPlay.setLayout(new GridLayout(1, 8, 0, 0));
+			panelBtPlay.add(getBtnClear());
 			panelBtPlay.add(getBtnRew());
 			panelBtPlay.add(getBtnPlay());
+			panelBtPlay.add(getBtnPause());
 			panelBtPlay.add(getBtnStop());
 			panelBtPlay.add(getBtnForward());
 			panelBtPlay.add(getBtnDel());
+			panelBtPlay.add(getBtnMute());
 		}
 		return panelBtPlay;
 	}
@@ -377,6 +400,7 @@ public class VentanaPrincipal extends JFrame {
 			btnRew.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					rewind();
+					pintarYCambiarVolumen();
 				}
 			});
 			btnRew.setToolTipText("Rewind");
@@ -402,6 +426,7 @@ public class VentanaPrincipal extends JFrame {
 			btnPlay.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					play();
+					pintarYCambiarVolumen();
 				}
 			});
 			btnPlay.setToolTipText("Play");
@@ -450,6 +475,7 @@ public class VentanaPrincipal extends JFrame {
 			btnStop.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mP.stop();
+					pintarYCambiarVolumen();
 				}
 			});
 			btnStop.setToolTipText("Stop");
@@ -466,6 +492,7 @@ public class VentanaPrincipal extends JFrame {
 			btnForward.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					forward();
+					pintarYCambiarVolumen();
 				}
 			});
 			btnForward.setToolTipText("Forward");
@@ -492,6 +519,7 @@ public class VentanaPrincipal extends JFrame {
 	private JButton getBtnDel() {
 		if (btnDel == null) {
 			btnDel = new JButton("Del");
+			btnDel.setSelectedIcon(new ImageIcon(VentanaPrincipal.class.getResource("/img/volumeOn.png")));
 			btnDel.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					delPlay();
@@ -593,10 +621,6 @@ public class VentanaPrincipal extends JFrame {
 			for (int i = 0; i < getSelector().getSelectedFiles().length; i++) {
 				modeloListLibrary.addElement(new MyFile(getSelector().getSelectedFiles()[i]));
 			}
-//				if (!modeloListLib.contains(getSelector().getSelectedFiles()[i])) {
-//					modeloListLib.addElement(getSelector().getSelectedFiles()[i]);
-//				}				
-//			}
 		}
 
 	}
@@ -612,6 +636,15 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem getMnRandom() {
 		if (mnRandom == null) {
 			mnRandom = new JMenuItem("Random");
+			mnRandom.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (getListPlay().getSelectedIndices().length > 0) {
+						int indi = (int) (Math.random() * modeloListPlay.size());
+						getListPlay().setSelectedIndex(indi);
+						mP.play(modeloListPlay.get(indi).getF());
+					}
+				}
+			});
 			mnRandom.setMnemonic('r');
 		}
 		return mnRandom;
@@ -620,6 +653,12 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem getMnNext() {
 		if (mnNext == null) {
 			mnNext = new JMenuItem("Next");
+			mnNext.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					forward();
+					pintarYCambiarVolumen();
+				}
+			});
 			mnNext.setMnemonic('n');
 		}
 		return mnNext;
@@ -674,5 +713,83 @@ public class VentanaPrincipal extends JFrame {
 
 		}
 		return selector;
+	}
+
+	private void pausar() {
+		if (isPaused) {
+			mP.resume();
+		} else {
+			mP.pause();
+		}
+		isPaused = !isPaused;
+	}
+
+	private JButton getBtnPause() {
+		if (btnPause == null) {
+			btnPause = new JButton("||");
+			btnPause.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					pausar();
+				}
+			});
+			btnPause.setToolTipText("Pause");
+			btnPause.setForeground(Color.WHITE);
+			btnPause.setFont(new Font("Dialog", Font.BOLD, 14));
+			btnPause.setBackground(Color.BLACK);
+		}
+		return btnPause;
+	}
+
+	private JButton getBtnClear() {
+		if (btnClear == null) {
+			btnClear = new JButton("Clear");
+			btnClear.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					modeloListPlay.removeAllElements();
+				}
+			});
+			btnClear.setToolTipText("Clear all elemnts");
+			btnClear.setForeground(Color.WHITE);
+			btnClear.setFont(new Font("Dialog", Font.BOLD, 14));
+			btnClear.setBackground(Color.BLACK);
+		}
+		return btnClear;
+	}
+
+	private JButton getBtnClearLib() {
+		if (btnClearLib == null) {
+			btnClearLib = new JButton("Clear");
+			btnClearLib.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					modeloListLibrary.removeAllElements();
+				}
+			});
+			btnClearLib.setMnemonic('a');
+			btnClearLib.setForeground(Color.WHITE);
+			btnClearLib.setFont(new Font("Dialog", Font.BOLD, 14));
+			btnClearLib.setBackground(Color.BLACK);
+		}
+		return btnClearLib;
+	}
+
+	private JToggleButton getBtnMute() {
+		if (btnMute == null) {
+			btnMute = new JToggleButton("");
+			btnMute.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					if (btnMute.isSelected()) {
+						mP.setVolume(0, 100);
+					} else {
+						mP.setVolume(getSlVolumen().getValue(), 100);
+					}
+				}
+			});
+
+			btnMute.setBackground(Color.BLACK);
+			btnMute.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/img/volumeOn.png")));
+			btnMute.setSelectedIcon(new ImageIcon(VentanaPrincipal.class.getResource("/img/volumeOn.png")));
+			btnMute.setToolTipText("Mute");
+		}
+		return btnMute;
 	}
 }

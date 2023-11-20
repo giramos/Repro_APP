@@ -11,6 +11,8 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -22,6 +24,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -335,9 +338,14 @@ public class VentanaPrincipal extends JFrame {
 
 	protected void añadirAPlayList() {
 		for (int i = 0; i < getListLibrary().getSelectedValuesList().size(); i++) {
-			modeloListPlay.addElement(getListLibrary().getSelectedValuesList().get(i));
+			if (!modeloListPlay.contains(getListLibrary().getSelectedValuesList().get(i))) {
+				modeloListPlay.addElement(getListLibrary().getSelectedValuesList().get(i));
+			}else {
+				JOptionPane.showMessageDialog(this, "Nun se pude neno añadir esa cancion porque ya ta!!!!", "Reproductor", JOptionPane.INFORMATION_MESSAGE);
+			}
 		}
 
+		
 	}
 
 	private JButton getBtnDelLib() {

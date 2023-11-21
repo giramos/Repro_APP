@@ -12,8 +12,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -31,7 +34,6 @@ import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -99,10 +101,13 @@ public class VentanaPrincipal extends JFrame {
 
 	private MusicPlayer mP;
 	private JButton btnPause;
-	private boolean isPaused = false;
+
 	private JButton btnClear;
 	private JButton btnClearLib;
 	private JToggleButton btnMute;
+	private JMenuItem mnRetry;
+	private JPanel panelReproduccion;
+	private JLabel lblCancion;
 
 	/**
 	 * Create the frame.
@@ -123,6 +128,7 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		contentPane.add(getPanelNorte(), BorderLayout.NORTH);
 		contentPane.add(getPanel_1());
+		contentPane.add(getPanelReproduccion(), BorderLayout.SOUTH);
 		setLocationRelativeTo(null);
 
 		habilitarPanelBoton(false);
@@ -399,6 +405,7 @@ public class VentanaPrincipal extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					rewind();
 					pintarYCambiarVolumen();
+					pintarCancion();
 				}
 			});
 			btnRew.setToolTipText("Rewind");
@@ -425,6 +432,7 @@ public class VentanaPrincipal extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					play();
 					pintarYCambiarVolumen();
+					pintarCancion();
 				}
 			});
 			btnPlay.setToolTipText("Play");
@@ -433,6 +441,22 @@ public class VentanaPrincipal extends JFrame {
 			btnPlay.setBackground(Color.BLACK);
 		}
 		return btnPlay;
+	}
+
+	protected void pintarCancion() {
+
+		try {
+			lblCancion.setText(String.valueOf("♪Cancion: " + "[" + getListPlay().getSelectedValue().getF().getName()
+					+ "]" + " Duracion Total: " + "["
+					+ mP.obtenerDuracionEnMinutosYSegundos(getListPlay().getSelectedValue().getF()) + "]"));
+		} catch (UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	protected void play() {
@@ -456,7 +480,6 @@ public class VentanaPrincipal extends JFrame {
 			// 2.creamos el modelo
 			modeloListPlay = new DefaultListModel<MyFile>();
 			listPlay = new JList<MyFile>();
-			listPlay.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			// 3.Asociar el modelo con la lista. Modo 2 = uso del medoto setModel()
 			listPlay.setModel(modeloListPlay);
 			listPlay.setForeground(Color.ORANGE);
@@ -473,6 +496,7 @@ public class VentanaPrincipal extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					mP.stop();
 					pintarYCambiarVolumen();
+					pintarCancion();
 				}
 			});
 			btnStop.setToolTipText("Stop");
@@ -490,6 +514,7 @@ public class VentanaPrincipal extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					forward();
 					pintarYCambiarVolumen();
+					pintarCancion();
 				}
 			});
 			btnForward.setToolTipText("Forward");
@@ -531,10 +556,43 @@ public class VentanaPrincipal extends JFrame {
 		return btnDel;
 	}
 
-	protected void delPlay() {
-		mP.stop();
-		modeloListPlay.removeElement(getListPlay().getSelectedValue());
+	/**
+	 * Metodo que permite eliminar varias canciones de la lista play Acepta
+	 * multiEleccion
+	 */
+	private void delPlay() {
+
+		List<MyFile> cancionesBorrar = getListPlay().getSelectedValuesList();
+
+		for (int i = 0; i < cancionesBorrar.size(); i++) {
+			modeloListPlay.removeElement(cancionesBorrar.get(i));
+		}
+//		OPCION NO VALIDA		
+//		for (int i=0; i<getListPlay().getSelectedValuesList().size() ; i++) {
+//			modeloListPlay.removeElement(getListPlay().getSelectedValuesList().get(i));
+//		}
 	}
+
+	/**
+	 * Este metodo tambien elimina de uno en uno aunque tengas seleccionado varios
+	 * items
+	 */
+//	private void delPlay() {
+//		mP.stop();
+//		for (int i = 0; i < getListPlay().getSelectedValuesList().size(); i++) {
+//			modeloListPlay.removeElement(getListPlay().getSelectedValuesList().get(i));
+//		}
+//
+//	}
+
+	/**
+	 * Este metodo esta bien si solo quieres eliminar de uno en uno y nuestra Lista
+	 * Play tiene single selecction
+	 */
+//	protected void delPlay() {
+//		mP.stop();
+//		modeloListPlay.removeElement(getListPlay().getSelectedValue());
+//	}
 
 	private JMenuBar getMenuBar_1() {
 		if (menuBar == null) {
@@ -574,6 +632,7 @@ public class VentanaPrincipal extends JFrame {
 			mnOptions.setEnabled(false);
 			mnOptions.setMnemonic('o');
 			mnOptions.add(getMnRandom());
+			mnOptions.add(getMnRetry());
 		}
 		return mnOptions;
 	}
@@ -634,16 +693,22 @@ public class VentanaPrincipal extends JFrame {
 			mnRandom = new JMenuItem("Random");
 			mnRandom.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if (getListPlay().getSelectedIndices().length > 0) {
-						int indi = (int) (Math.random() * modeloListPlay.size());
-						getListPlay().setSelectedIndex(indi);
-						mP.play(modeloListPlay.get(indi).getF());
-					}
+					random();
+					pintarYCambiarVolumen();
+					pintarCancion();
 				}
 			});
 			mnRandom.setMnemonic('r');
 		}
 		return mnRandom;
+	}
+
+	private void random() {
+		if (getListPlay().getSelectedIndices().length > 0) {
+			int indi = (int) (Math.random() * modeloListPlay.size());
+			getListPlay().setSelectedIndex(indi);
+			mP.play(modeloListPlay.get(indi).getF());
+		}
 	}
 
 	private JMenuItem getMnNext() {
@@ -653,6 +718,7 @@ public class VentanaPrincipal extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					forward();
 					pintarYCambiarVolumen();
+					pintarCancion();
 				}
 			});
 			mnNext.setMnemonic('n');
@@ -712,14 +778,19 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void pausar() {
-		if (isPaused) {
+		if (mP.isPaused) {
 			mP.resume();
 		} else {
 			mP.pause();
 		}
-		isPaused = !isPaused;
+		mP.isPaused = !mP.isPaused;
 	}
 
+	/**
+	 * Boton pausa
+	 * 
+	 * @return
+	 */
 	private JButton getBtnPause() {
 		if (btnPause == null) {
 			btnPause = new JButton("||");
@@ -736,6 +807,11 @@ public class VentanaPrincipal extends JFrame {
 		return btnPause;
 	}
 
+	/**
+	 * Boton en el panel de la playList Elimina todos los elementos de la lista
+	 * 
+	 * @return
+	 */
 	private JButton getBtnClear() {
 		if (btnClear == null) {
 			btnClear = new JButton("Clear");
@@ -752,6 +828,12 @@ public class VentanaPrincipal extends JFrame {
 		return btnClear;
 	}
 
+	/**
+	 * Boton en el panel de la libreria Clear Borra todos los elementos que hay en
+	 * ella
+	 * 
+	 * @return
+	 */
 	private JButton getBtnClearLib() {
 		if (btnClearLib == null) {
 			btnClearLib = new JButton("Clear");
@@ -768,24 +850,77 @@ public class VentanaPrincipal extends JFrame {
 		return btnClearLib;
 	}
 
+	/**
+	 * Boton toggleButton mute Si esta seleccionado el volumen estará en el minimo
+	 * Si no esta seleccionado el volumen estará en el valor que marque el Slider
+	 * 
+	 * @return
+	 */
 	private JToggleButton getBtnMute() {
 		if (btnMute == null) {
 			btnMute = new JToggleButton("");
 			btnMute.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
 					if (btnMute.isSelected()) {
-						mP.setVolume(0, 100);
+						mP.setVolume(getSlVolumen().getMinimum(), getSlVolumen().getMaximum());
 					} else {
-						mP.setVolume(getSlVolumen().getValue(), 100);
+						mP.setVolume(getSlVolumen().getValue(), getSlVolumen().getMaximum());
 					}
 				}
 			});
-
 			btnMute.setBackground(Color.BLACK);
 			btnMute.setIcon(new ImageIcon(VentanaPrincipal.class.getResource("/img/volumeOn.png")));
 			btnMute.setSelectedIcon(new ImageIcon(VentanaPrincipal.class.getResource("/img/volumeOn.png")));
 			btnMute.setToolTipText("Mute");
 		}
 		return btnMute;
+	}
+
+	private JMenuItem getMnRetry() {
+		if (mnRetry == null) {
+			mnRetry = new JMenuItem("Retry");
+			mnRetry.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					repetir();
+					pintarYCambiarVolumen();
+					pintarCancion();
+				}
+			});
+		}
+		return mnRetry;
+	}
+
+	private void repetir() {
+		if (getListPlay().getSelectedValue().getF().canExecute()) {
+			if (getListPlay().getSelectedIndex() == -1) {
+				getListPlay().setSelectedIndex(0); // si no hay ninguna seleccionada, seleccionamos la
+													// primera
+			}
+			mP.play(getListPlay().getSelectedValue().getF());
+		} else {
+			JOptionPane.showMessageDialog(this, "Ahora mismo no está sonando na´, asi que...\n¿qué vas a repetir?",
+					"RepGiramosApp", JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+
+	private JPanel getPanelReproduccion() {
+		if (panelReproduccion == null) {
+			panelReproduccion = new JPanel();
+			panelReproduccion.setBorder(new LineBorder(Color.ORANGE, 3));
+			panelReproduccion.setBackground(Color.BLACK);
+			panelReproduccion.setLayout(new GridLayout(1, 1, 0, 0));
+			panelReproduccion.add(getLblCancion());
+		}
+		return panelReproduccion;
+	}
+
+	private JLabel getLblCancion() {
+		if (lblCancion == null) {
+			lblCancion = new JLabel(" ♪");
+			lblCancion.setFont(new Font("Dialog", Font.BOLD, 18));
+			lblCancion.setForeground(Color.GREEN);
+			lblCancion.setBackground(Color.BLACK);
+		}
+		return lblCancion;
 	}
 }

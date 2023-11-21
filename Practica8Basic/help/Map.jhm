@@ -5,6 +5,9 @@
 
 <map version="1.0">
 
-<mapID target="" url="" />
+<mapID target="intro" url="Fuentes/introduccion.html" />
+<mapID target="add" url="Fuentes/añadir.html" />
+<mapID target="del" url="Fuentes/eliminar.html" />
+<mapID target="play" url="Fuentes/reproducir.html" />
 
 </map>

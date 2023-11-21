@@ -5,6 +5,18 @@
 
 <index version="1.0">
 
-  <indexitem text="" target="" />
+  <indexitem text="añadir música" target="add" />
+  <indexitem text="descripción EII Music Player" target="intro" />
+  <indexitem text="eliminar música" target="del" />
+  
+  <indexitem text="música" target="del" >
+  	    <indexitem text="añadir" target="add" />
+  	    <indexitem text="eliminar" target="del" />
+  	    <indexitem text="reproducir" target="play" />
+  	  
+  	
+  </indexitem>
+  
+  <indexitem text="reproducir música" target="play" />
     
 </index>

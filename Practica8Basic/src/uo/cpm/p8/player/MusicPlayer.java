@@ -10,13 +10,13 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.tritonus.share.sampled.file.TAudioFileFormat;
 
-import javazoom.jlgui.basicplayer.*;
+import javazoom.jlgui.basicplayer.BasicPlayer;
+import javazoom.jlgui.basicplayer.BasicPlayerException;
 
 public class MusicPlayer {
 
 	private BasicPlayer basicPlayer = null;
 	public boolean isPaused = false;
-
 
 	public MusicPlayer() {
 		basicPlayer = new BasicPlayer();
@@ -62,6 +62,8 @@ public class MusicPlayer {
 		}
 	}
 	
+	
+	
 	public String obtenerDuracionEnMinutosYSegundos(File file) throws UnsupportedAudioFileException, IOException {
 	    // Obtener el formato del archivo de audio
 	    AudioFileFormat audioFileFormat = AudioSystem.getAudioFileFormat(file);
@@ -84,7 +86,5 @@ public class MusicPlayer {
 
 	    return duracionFormateada;
 	}
-
-
 
 }

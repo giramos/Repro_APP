@@ -14,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -39,6 +40,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import uo.cpm.p8.player.MusicPlayer;
 import uo.cpm.p8.player.MyFile;
@@ -562,10 +564,10 @@ public class VentanaPrincipal extends JFrame {
 	 */
 	private void delPlay() {
 
-		List<MyFile> cancionesBorrar = getListPlay().getSelectedValuesList();
+		List<MyFile> listaCanciones = getListPlay().getSelectedValuesList();
 
-		for (int i = 0; i < cancionesBorrar.size(); i++) {
-			modeloListPlay.removeElement(cancionesBorrar.get(i));
+		for (int i = 0; i < listaCanciones.size(); i++) {
+			modeloListPlay.removeElement(listaCanciones.get(i));
 		}
 //		OPCION NO VALIDA		
 //		for (int i=0; i<getListPlay().getSelectedValuesList().size() ; i++) {
@@ -573,6 +575,15 @@ public class VentanaPrincipal extends JFrame {
 //		}
 	}
 
+	/**
+	 * Iterador opcion 2
+	 */
+//	private void delPlay() {
+//		Iterator<MyFile> it = getListLibrary().getSelectedValuesList().iterator();
+//		while(it.hasNext()) {
+//			modeloListLibrary.removeElement(it.next());
+//		}
+//	}
 	/**
 	 * Este metodo tambien elimina de uno en uno aunque tengas seleccionado varios
 	 * items
@@ -763,6 +774,12 @@ public class VentanaPrincipal extends JFrame {
 			// si solo quieres uno quita o comenta la siguiente linea
 			// permite seleccionar varios ficheros a la vez
 			selector.setMultiSelectionEnabled(true);
+			
+			// FILTROSSSSSSSSSSSSSSSSSSS
+			// establece un filtro para mostrar los archivos mp3
+			selector.setFileFilter(new FileNameExtensionFilter("Archivos mp3", "mp3"));
+			// Otro filtro
+			selector.setFileFilter(new FileNameExtensionFilter("Imagenes jpg&bmp", "jpg", "bmp"));
 
 			// Para que cuando se nos abra la ventana aparexca en un determindao direcotrio
 			// fijar el directorio de despliegue del JFilechooser en mi carpeta de mi

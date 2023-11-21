@@ -26,3 +26,21 @@ ListPlay (JList)
 	tambien hay otro modelo, el cual hay que asociar a un modelo
 	(modeloListPlay) -> defaultListModel
 	
+	
+	
+Cuando hagamos los labelfor
+
+	debe de tener dos puntos ':'
+
+	
+	
+AYUDA
+1)help
+	
+	-Crear los topics html
+		-intro (-Introduccion (de que va la app))
+		-añadir
+		-eliminar
+		-abrir
+		-como repro musica
+	

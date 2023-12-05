@@ -2,6 +2,7 @@ package uo.cpm.p8.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -47,6 +48,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import uo.cpm.p8.player.MusicPlayer;
 import uo.cpm.p8.player.MyFile;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * 
@@ -120,6 +123,14 @@ public class VentanaPrincipal extends JFrame {
 	 * @param mP
 	 */
 	public VentanaPrincipal(MusicPlayer mP) {
+		// Se coge la ventana y se establece un tamaño minimo al que no se puede reducir
+		// mas
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				tamañoMinimo();
+			}
+		});
 		this.mP = mP;
 		setIconImage(Toolkit.getDefaultToolkit().getImage(VentanaPrincipal.class.getResource("/img/logoTitulo.png")));
 		setTitle("EII MusicPlayer");
@@ -137,8 +148,17 @@ public class VentanaPrincipal extends JFrame {
 		setLocationRelativeTo(null);
 
 		habilitarPanelBoton(false);
+		setMinimumSize(new Dimension(605, 372));
 		cargaAyuda();
 
+	}
+
+	/**
+	 * Tamaño minimo de la ventana para que no se reduzca mas
+	 */
+	private void tamañoMinimo() {
+		Dimension d = this.getSize();
+//		System.out.println(d);
 	}
 
 	/**
@@ -195,7 +215,6 @@ public class VentanaPrincipal extends JFrame {
 					pintarYCambiarVolumen();
 				}
 			});
-			slVolumen.setFocusable(false);
 			slVolumen.setPaintTicks(true);
 			slVolumen.setPaintLabels(true);
 			slVolumen.setMinorTickSpacing(5);
@@ -779,7 +798,7 @@ public class VentanaPrincipal extends JFrame {
 			// si solo quieres uno quita o comenta la siguiente linea
 			// permite seleccionar varios ficheros a la vez
 			selector.setMultiSelectionEnabled(true);
-			
+
 			// FILTROSSSSSSSSSSSSSSSSSSS
 			// establece un filtro para mostrar los archivos mp3
 			selector.setFileFilter(new FileNameExtensionFilter("Archivos mp3", "mp3"));
@@ -945,31 +964,35 @@ public class VentanaPrincipal extends JFrame {
 		}
 		return lblCancion;
 	}
-	
-	//Incorporar este metodo en la Ventana principal e invocarlo desde el constructor
-	private void cargaAyuda(){
 
-	   URL hsURL;
-	   HelpSet hs;
+	// Incorporar este metodo en la Ventana principal e invocarlo desde el
+	// constructor
+	private void cargaAyuda() {
 
-	    try {
-		    	File fichero = new File("help/ayuda.hs");
-		    	hsURL = fichero.toURI().toURL();
-		        hs = new HelpSet(null, hsURL);
-		      }
+		URL hsURL;
+		HelpSet hs;
 
-	    catch (Exception e){
-	      System.out.println("Ayuda no encontrada");
-	      return;
-	   }
+		try {
+			File fichero = new File("help/ayuda.hs");
+			hsURL = fichero.toURI().toURL();
+			hs = new HelpSet(null, hsURL);
+		}
 
-	   HelpBroker hb = hs.createHelpBroker();
-	   hb.initPresentation();
+		catch (Exception e) {
+			System.out.println("Ayuda no encontrada");
+			return;
+		}
 
-	   hb.enableHelpKey(getRootPane(),"intro", hs);
-	   hb.enableHelpOnButton(this.getMnContents(), "intro", hs);
-	   hb.enableHelp(this.getBtnPlay()	, "play", hs);
-   hb.enableHelp(this.getSlVolumen()	, "vol", hs);
-	 }
+		HelpBroker hb = hs.createHelpBroker();
+		hb.initPresentation();
+
+		// Activa la tecla F1, es decir hace que funcione la ayuda pulsando F1
+		hb.enableHelpKey(getRootPane(), "intro", hs);
+		// Asocia la ayuda a un boton, en este caso el menu item a contents
+		hb.enableHelpOnButton(this.getMnContents(), "intro", hs);
+//		/ Ayuda sensible sobre el contexto
+		hb.enableHelp(this.getBtnPlay(), "play", hs);
+		hb.enableHelp(this.getSlVolumen(), "vol", hs);
+	}
 
 }

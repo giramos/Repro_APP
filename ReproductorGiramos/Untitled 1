@@ -52,7 +52,7 @@ AYUDA
 
 4)Crear tabla de contenidos TOC
 
-5)Crear un indice (va en minusculas y ordenado)	NO ES IGUAL A LA TABLA DE CONTENIDOS
+5)Crear un indice (va en minusculas y ordenado alfabeticamente)	NO ES IGUAL A LA TABLA DE CONTENIDOS
 
 6)Busqueda
 
@@ -63,5 +63,10 @@ AYUDA
 	INSTRUCCION:
 	
 	C:\Users\germa\git\Repro_APP\Practica8Basic\help>C:\Users\germa\Downloads\RecursosAyuda\jh2.0\javahelp\bin\jhindexer Fuentes
+	
+	
+	
+	Si quieres asociar al slider del volumen la ayuda has de poner a true el slider del volumen el "focusable"
+	
 
 	-

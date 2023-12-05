@@ -26,7 +26,10 @@ public class Main {
 				try {
 					// Cambia el look and feel
 					Properties props = new Properties();
+					// Para quitar la imagen del agua
 					props.put("logoString", "");
+					// Para quitar el recuadro del slider que era amarillo y no poinga nada
+					props.put("focusColor", "0 0 0");
 					McWinLookAndFeel.setCurrentTheme(props);
 					UIManager.setLookAndFeel("com.jtattoo.plaf.mcwin.McWinLookAndFeel");
 

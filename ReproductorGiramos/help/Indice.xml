@@ -15,9 +15,8 @@
 		<indexitem text="reproducir" target="play" />
 		<indexitem text="volumen" target="vol" />
 	</indexitem>
-
 	
-	<indexitem text="volumen slider" target="vol" />
 	<indexitem text="reproducir música" target="play" />
+	<indexitem text="volumen slider" target="vol" />
 
 </index>
